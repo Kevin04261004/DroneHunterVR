@@ -18,6 +18,10 @@ public:
 	UDHGameInstance();
 	void AddScore(int32 Points);
 	void DecreaseHealth(int32 Damage);
+	
+	UFUNCTION(BlueprintCallable, Category="Health")
+	void UpdateHealthUI(class ADHHPUIActor* UIActor, FVector LeftHandLocation, FRotator LeftHandRotation);
+	
 
 	// 상태 확인 함수
 	UFUNCTION(BlueprintCallable, Category = "Game State")
@@ -33,6 +37,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game State")
 	int32 GetPlayerHealth() const { return PlayerHealth; }
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))
+	int32 PlayerMaxHealth = 3;
 protected:
 	// 게임 상태 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))

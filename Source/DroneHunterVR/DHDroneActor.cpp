@@ -21,8 +21,9 @@ ADHDroneActor::ADHDroneActor()
 	Collision->SetupAttachment(DroneMesh);
 
 	LoopingSound = CreateDefaultSubobject<UAudioComponent>(TEXT("LoopingSound"));
+	LoopingSound->SetupAttachment(RootComponent);
 	LoopingSound->bAutoActivate = false;
-	
+
 	Health = 3;
 	AttackTime = 2.0f;
 	FollowSpeed = 300.0f;
@@ -139,7 +140,8 @@ void ADHDroneActor::Shoot()
 
 void ADHDroneActor::TakeDamage()
 {
-	if (--Health <= 0)
+	Health--;
+	if (Health <= 0)
 	{
 		DestroyDrone();
 	}

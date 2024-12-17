@@ -3,9 +3,11 @@
 
 #include "DHGameInstance.h"
 
+#include "DHHPUIActor.h"
+
 UDHGameInstance::UDHGameInstance()
 {
-	PlayerHealth = 3;
+	PlayerHealth = PlayerMaxHealth;
 	TargetScore = 3100;
 	PlayerScore = 0;
 	bGameOver = false;
@@ -27,6 +29,19 @@ void UDHGameInstance::DecreaseHealth(int32 Damage)
 	{
 		PlayerHealth -= Damage;
 		UpdateGameState();
+	}
+}
+
+void UDHGameInstance::UpdateHealthUI(ADHHPUIActor* UIActor, FVector LeftHandLocation, FRotator LeftHandRotation)
+{
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		if (UIActor)
+		{
+			// HealthUIActor에 체력 업데이트
+			UIActor->UpdateHealthUI(LeftHandLocation, LeftHandRotation, PlayerHealth, PlayerMaxHealth);
+		}
 	}
 }
 
