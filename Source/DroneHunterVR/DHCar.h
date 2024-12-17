@@ -6,7 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "DHCar.generated.h"
 
-class ADHDrone;
+class UBoxComponent;
+class ADHDroneActor;
 class UDHDroneComponent;
 class UArrowComponent;
 class USplineComponent;
@@ -35,19 +36,25 @@ public:
 	UStaticMeshComponent* Mesh;
 	
 	UPROPERTY(EditAnywhere)
-	float Speed = 3.f;
+	float Speed = 300.f;
 
 	UPROPERTY()
 	TArray<TObjectPtr<USplineComponent>> DroneSplines;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<ADHDrone> Drone;
+	TSubclassOf<ADHDroneActor> Drone;
 
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UBoxComponent> BoxComponent;
 private:
 	float DistanceAlongSpline = 0.f;
 	UPROPERTY()
 	USplineComponent* PathSpline;
 
-private:
+public:
+	void SpawnDroneCount(int count);
+	void SpawnDroneOneTimeRandomly();
 	void SpawnDrone(int index);
+	void SpawnAllDrone();
 };

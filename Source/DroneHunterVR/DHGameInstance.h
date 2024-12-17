@@ -13,5 +13,43 @@ UCLASS()
 class DRONEHUNTERVR_API UDHGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
+
+public:
+	UDHGameInstance();
+	void AddScore(int32 Points);
+	void DecreaseHealth(int32 Damage);
+
+	// 상태 확인 함수
+	UFUNCTION(BlueprintCallable, Category = "Game State")
+	bool IsGameOver() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Game State")
+	bool IsVictory() const;
+
+	// 현재 점수와 체력 반환
+	UFUNCTION(BlueprintCallable, Category = "Game State")
+	int32 GetPlayerScore() const { return PlayerScore; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game State")
+	int32 GetPlayerHealth() const { return PlayerHealth; }
+
+protected:
+	// 게임 상태 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))
+	int32 PlayerHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))
+	int32 PlayerScore;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))
+	int32 TargetScore;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))
+	bool bGameOver;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game State", meta = (AllowPrivateAccess = "true"))
+	bool bVictory;
+
+private:
+	void UpdateGameState();
 };
