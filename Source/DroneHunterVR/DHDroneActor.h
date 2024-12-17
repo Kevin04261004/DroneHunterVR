@@ -18,6 +18,9 @@ public:
 
 	void Initialize(UActorComponent* InTargetLocation, USplineComponent* InSplinePath, int InHealth = 3, float InSpeed = 150.f);
 	virtual void BeginDestroy() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor> PlayerBullet;
 protected:
 	virtual void BeginPlay() override;
 
@@ -53,7 +56,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	TObjectPtr<USoundBase> DamageSound; // 대미지 받을 떄 사운드
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<USoundBase> ShootSound;
 private:
 	FTimerHandle AttackTimerHandle;
 	UPROPERTY()

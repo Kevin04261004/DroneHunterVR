@@ -1,4 +1,6 @@
 #include "DHDroneActor.h"
+
+#include "DHGameInstance.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Actor.h"
 #include "TimerManager.h"
@@ -75,9 +77,13 @@ void ADHDroneActor::UpdateMovement(float DeltaTime)
 
 		if (Target)
 		{
-			// Target 위치 가져오기
-			FVector TargetLocation = Target->GetOwner()->GetActorLocation();
-			FVector CurrentLocation = GetActorLocation();
+			USceneComponent* SceneComponentTarget = Cast<USceneComponent>(Target);
+			if (!SceneComponentTarget)
+			{
+				return;
+			}
+			FVector TargetLocation = SceneComponentTarget->GetComponentLocation();
+			FVector CurrentLocation = GetActorLocation() + FVector(0, 0, 200);
 
 			// LookAt 회전 계산
 			FRotator LookAtRotation = (TargetLocation - CurrentLocation).Rotation();
@@ -100,7 +106,14 @@ void ADHDroneActor::Shoot()
 		FVector SpawnLocation = GetActorLocation();
 
 		// 타겟 위치를 가져와 방향 계산
-		FVector TargetLocation = Target->GetOwner()->GetActorLocation();
+		USceneComponent* SceneComponentTarget = Cast<USceneComponent>(Target);
+		if (!SceneComponentTarget)
+		{
+			return;
+		}
+		// 타겟 컴포넌트의 월드 좌표 가져오기
+		FVector TargetLocation = SceneComponentTarget->GetComponentLocation() + FVector(0, 0, 200);
+			
 		FVector Direction = (TargetLocation - SpawnLocation).GetSafeNormal(); // 방향 벡터 정규화
 
 		// 총알이 타겟을 향하도록 회전 설정
@@ -115,6 +128,10 @@ void ADHDroneActor::Shoot()
 			if (ProjectileComp)
 			{
 				ProjectileComp->Velocity = Direction * ProjectileComp->InitialSpeed;
+			}
+			if (ShootSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, ShootSound, GetActorLocation());
 			}
 		}
 	}
@@ -142,6 +159,13 @@ void ADHDroneActor::DestroyDrone()
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestroyEffect, GetActorLocation());
 	}
+
+	UDHGameInstance* GameInstance = Cast<UDHGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (GameInstance)
+	{
+		GameInstance->AddScore(100);
+	}
+	
 	Destroy();
 }
 
@@ -151,6 +175,9 @@ void ADHDroneActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 {
 	if (OtherActor && OtherActor != this)
 	{
-		TakeDamage();
+		if (OtherActor->IsA(PlayerBullet))
+		{
+			TakeDamage();
+		}
 	}
 }

@@ -5,7 +5,7 @@
 
 UDHGameInstance::UDHGameInstance()
 {
-	PlayerHealth = 100;
+	PlayerHealth = 3;
 	TargetScore = 3100;
 	PlayerScore = 0;
 	bGameOver = false;

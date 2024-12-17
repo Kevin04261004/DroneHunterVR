@@ -1,5 +1,6 @@
 #include "DHDroneBullet.h"
 
+#include "DHCar.h"
 #include "DHGameInstance.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
@@ -15,8 +16,11 @@ ADHDroneBullet::ADHDroneBullet()
 	RootComponent = CollisionComponent;
 	CollisionComponent->InitSphereRadius(10.0f);
 	CollisionComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
-	CollisionComponent->OnComponentHit.AddDynamic(this, &ADHDroneBullet::OnHit);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ADHDroneBullet::OnOverlapBegin);
 
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(CollisionComponent);
+	
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->UpdatedComponent = CollisionComponent;
 	ProjectileMovementComponent->InitialSpeed = 1000.f;
@@ -32,24 +36,23 @@ void ADHDroneBullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ADHDroneBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-							FVector NormalImpulse, const FHitResult& Hit)
+void ADHDroneBullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
-		if (OtherActor->IsA(PlayerClass))
+		if (ADHCar* Car = Cast<ADHCar>(OtherActor))
 		{
 			UDHGameInstance* GameInstance = Cast<UDHGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 			if (GameInstance)
 			{
 				GameInstance->DecreaseHealth(Damage);
 			}
+			if (HitEffect)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorLocation());
+			}
+			Destroy();
 		}
-		
-		if (HitEffect)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, GetActorLocation());
-		}
-		Destroy();
 	}
 }
